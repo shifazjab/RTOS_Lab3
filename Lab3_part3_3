@@ -1,0 +1,53 @@
+TaskHandle_t firstTaskHandle = NULL;
+TaskHandle_t secondTaskHandle = NULL;
+
+const int LED1 = 2;   // LED 1 connected to pin 2
+const int LED2 = 4;    // LED 2 connected to pin 4
+
+static int taskcore1=0;   // core 0
+static int taskcore2=1;   // core 1
+
+void first_Task (void *param1){   // Task 1 function
+  for(;;){
+        digitalWrite(LED1, HIGH);    // Turn on LED 1
+        delay(500);      // delay for 500ms
+        digitalWrite(LED1, LOW);    // Turn off LED 1
+        delay(500);      // delay for 500ms
+  }
+  
+}
+
+void second_Task (void *param2){   // Task 2 function
+  for(;;){
+    digitalWrite(LED2, HIGH);    // Turn on LED 2
+    delay(300);      // delay for 300ms
+    digitalWrite(LED2, LOW);    // Turn off LED 2
+    delay(300);      // delay for 300ms
+  }
+}
+
+void setup() {
+  pinMode(LED1,OUTPUT);     // configuring the LED 1 as output
+  pinMode(LED2,OUTPUT);     // configuring the LED 2 as output
+  // Task 1 setting
+  xTaskCreatePinnedToCore( first_Task, 
+                            "Task1", 
+                            10000, 
+                            (void*)0, 
+                            1, 
+                            &firstTaskHandle,
+                            taskcore1);
+                            
+  // Task 2 setting
+  xTaskCreatePinnedToCore( second_Task, 
+                            "Task2", 
+                            10000, 
+                            (void*)0, 
+                            1, 
+                            &secondTaskHandle,
+                            taskcore2);
+}
+
+void loop(){
+  
+}
