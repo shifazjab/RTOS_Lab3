@@ -1,0 +1,51 @@
+TaskHandle_t firstTaskHandle = NULL;
+TaskHandle_t secondTaskHandle = NULL;
+
+static int taskcore1=0;   // core 0
+static int taskcore2=1;   // core 1
+
+void first_task (void *para1){   // Task 1 function
+  for(;;){
+        digitalWrite(LED_BUILTIN, HIGH);    // Turn on internal LED
+        vTaskDelay(500);      // delay for 500ms
+        digitalWrite(LED_BUILTIN, LOW);     // Turn off internal LED
+        vTaskDelay(500);      // delay for 500ms
+  }
+  
+}
+
+void second_task (void *para2){   // Task 2 function
+  for(;;){
+    digitalWrite(LED_BUILTIN, HIGH);    // Turn on internal LED
+    vTaskDelay(300);      // delay for 300ms
+    digitalWrite(LED_BUILTIN, LOW);    // Turn off internal LED
+    vTaskDelay(300);      // delay for 300ms
+  }
+}
+
+void setup() {
+  pinMode(LED_BUILTIN,OUTPUT);    // configuring the built-in LED as output
+  // Task 1 setting
+  xTaskCreatePinnedToCore( first_task, 
+                            "Task1", 
+                            1000, 
+                            (void*) 0, 
+                            0, 
+                            &firstTaskHandle,
+                            taskcore1);
+  
+  // Task 2 setting
+  xTaskCreatePinnedToCore( second_task, 
+                            "Task2", 
+                            1000, 
+                            (void*) 0, 
+                            0, 
+                            &secondTaskHandle,
+                            taskcore2);
+  
+  vTaskStartScheduler();
+}
+
+void loop(){
+  
+}
