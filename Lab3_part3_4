@@ -1,0 +1,54 @@
+#define LED_B LED_BUILTIN
+
+TaskHandle_t firstTaskHandle = NULL;
+TaskHandle_t secondTaskHandle = NULL;
+
+static int taskcore1=0;   // core 0
+static int taskcore2=1;   // core 1
+
+static int Input;
+
+void first_Task (void *para1){    // Task 1 function
+  int Delay_1=*((int*) para1);
+  for(;;){
+        digitalWrite(LED_B, HIGH);    // Turn on LED_B
+        vTaskDelay(Delay_1);        // delay for the requred time
+        digitalWrite(LED_B, LOW);     // Turn off LED_B
+        vTaskDelay(Delay_1);        // delay for the requred time
+  }
+}
+
+void second_Task (void *para2){     // Task 2 function
+  while (Serial.available() > 0){   // waiting for the user response
+      Input = Serial.parseInt();    //getting input from user
+      Serial.print(Input);    // printing the input
+  }
+}
+
+void setup() {
+  Serial.begin(9600);     // setting bode rate to 9600
+  Serial.print("What is the delay time to set blinking the LED?");    // print in serial monitor
+  pinMode(LED_B,OUTPUT);      // configuring the internal LED as output
+
+  xTaskCreatePinnedToCore( first_Task, 
+                            "Task1", 
+                            1000, 
+                            (void*) 0, 
+                            0, 
+                            &firstTaskHandle,
+                            taskcore1);
+  
+  xTaskCreatePinnedToCore( second_Task, 
+                            "Task2", 
+                            1000, 
+                            (void*) Input, 
+                            0, 
+                            &secondTaskHandle,
+                            taskcore2);
+  
+  vTaskStartScheduler();
+}
+
+void loop(){
+  
+}
