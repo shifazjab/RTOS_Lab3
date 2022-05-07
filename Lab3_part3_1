@@ -1,0 +1,29 @@
+TaskHandle_t firstTask_Handle = NULL;
+static int taskcore=0;
+
+void firstTask (void *para){    // Task function
+  for(;;){
+        digitalWrite(LED_BUILTIN, HIGH);    // turn on LED
+        vTaskDelay(500);      // delay for 500ms
+        digitalWrite(LED_BUILTIN, LOW);     // turn off LED
+        vTaskDelay(500);      // delay for 500ms
+  }
+  
+}
+
+void setup() {
+  pinMode(LED_BUILTIN,OUTPUT);    // configuring the LED as output
+  xTaskCreatePinnedToCore( firstTask, 
+                            "fitstTask", 
+                            1000, 
+                            (void*) 0, 
+                            0, 
+                            &firstTask_Handle,
+                            taskcore);
+                            vTaskStartScheduler();
+}
+
+void loop(){
+  
+}
+
